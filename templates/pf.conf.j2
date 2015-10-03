@@ -11,6 +11,6 @@ pass            # establish keep-state
 block return in on ! lo0 proto tcp to port 6000:6010
 
 # enable NAT
-{% for interface in NAT_in_if %}
-pass out on {{ NAT_out_if }} inet from {{ interface }}:network to any nat-to ({{ NAT_out_if }}) 
+{% for interface in NAT_inside %}
+pass out on {{ NAT_outside }} inet from {{ interface }}:network to any nat-to ({{ NAT_outside }}) 
 {% endfor %}

@@ -12,7 +12,9 @@
   copy: src=network/rc.conf.local dest=/etc/rc.conf.local owner=root group=wheel mode=0644
 
 - name: setting default gw
-  template: src=mygate.j2 dest=/etc/mygate owner=root group=wheel mode=0644
+  template: 
+    src=mygate.j2 dest=/etc/mygate 
+    owner=root group=wheel mode=0644
   notify:
   - reload network
 
@@ -26,9 +28,10 @@
   notify:
   - reload pf
   
+  
 # /etc/mygate is not working due to dhcp...
 - name: add default gw to route
-  template: src=hostname.ext_if.j2 dest=/etc/hostname.{{ NAT_out_if }} owner=root group=wheel mode=0600
+  template: src=hostname.ext_if.j2 dest=/etc/hostname.{{ NAT_outside }} owner=root group=wheel mode=0600
   notify:
   - reload network
 

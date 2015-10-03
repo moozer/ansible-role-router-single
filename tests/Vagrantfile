@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # machine #1 the router
+  config.vm.define "router" do |router|
+    router.vm.box = "moozer/base-ob57"
+    router.vm.synced_folder "shared", "/vagrant"
+    router.vm.hostname = "router"
+
+    # x.x.x.1 does work well with libvirt
+    router.vm.network :private_network, 
+      :ip => "10.10.0.5",
+      :libvirt__forward_mode => "nat",
+      :libvirt__network_name => "LAN_upstream"
+
+    router.vm.network :private_network, 
+      :ip => "10.100.10.5",
+      :libvirt__forward_mode => "none",
+      :libvirt__network_name => "LAN_A",
+      :libvirt__forward_mode => "none"
+
+    router.vm.network :private_network, 
+      :ip => "10.10.20.5",
+      :libvirt__forward_mode => "none",
+      :libvirt__network_name => "LAN_B",
+      :libvirt__forward_mode => "none"
+      
+    router.vm.provision "shell",
+      inline: "ln -s /usr/local/bin/python /usr/bin"
+  end
+
+  # machine #2 a debian 8 machine
+  config.vm.define "ipsserver" do |serverA|
+    serverA.vm.box = "deb8-base"
+    serverA.vm.synced_folder "shared", "/vagrant", type: "9p"
+    serverA.vm.hostname = "serverA"
+
+    # not setting IP address
+    # specifying that DHCP trumps mgnt as gateway
+    serverA.vm.network :private_network, 
+      :libvirt__network_name => "LAN_A",
+      :libvirt__forward_mode => "none",
+      :use_dhcp_assigned_default_route => true
+  end
+
+  # machine #3 a debian 8 mahcine to hold the ipsec client
+  config.vm.define "serverB" do |serverB|
+    serverB.vm.box = "deb8-base"
+    serverB.vm.synced_folder "shared", "/vagrant", type: "9p"
+    serverB.vm.hostname = "serverB"
+
+    # specifying that DHCP trumps mgnt as gateway
+    serverB.vm.network :private_network, 
+      :libvirt__network_name => "LAN_B",
+      :libvirt__forward_mode => "none",
+      :use_dhcp_assigned_default_route => true
+  end
+
+  # start this on the localhost, not a remote kvm host
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.host = ""
+  end
+
+  # and do provisioning
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "test.yml"
+    #ansible.inventory_path = "inventory"
+    ansible.groups = {
+      "routers" => ["router"],
+      "servers" => ["serverA", "serverB"]
+    }
+  end
+
+end

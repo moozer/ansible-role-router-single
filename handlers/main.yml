@@ -1,2 +1,6 @@
----
-# handlers file for router-single
+# includes relevant handlers
+
+- include: restart-OpenBSD.yml
+  when: ansible_os_family == "OpenBSD"
+
+- debug: var=ansible_os_family
