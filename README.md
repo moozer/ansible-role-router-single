@@ -3,7 +3,9 @@ Role Name
 
 This role is to make a simple router functionality.
 
+I have decided to draw the line at CARP and other redundancy services.
 
+The use-case that I am aiming at is to do "vagrant up" and start a small sub-network with a router and some server. This is mainly used for testing environments - for actual security, some tweaking is necessary.
 
 Requirements
 ------------
@@ -13,12 +15,12 @@ none
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Look in vars/main.yml, or the examples in the tests directory.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+none
 
 Example Playbook
 ----------------
@@ -27,9 +29,9 @@ Look in the tests directory for an example vagrant configuration.
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
+    - hosts: test_router
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: router-single, x: 42 }
 
 License
 -------
