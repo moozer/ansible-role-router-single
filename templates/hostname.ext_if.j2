@@ -1,0 +1,2 @@
+inet {{ ext_if_address }} {{ ext_if_netmask }} NONE
+!route add -net 0.0.0.0/0 {{ ext_if_gw }}

@@ -1,0 +1,52 @@
+# stuff needed to enable routing
+
+- name: OpenBSD sysctl net.inet.ip.forwarding = 1 enable ipv4 forwarding
+  sysctl: name=net.inet.ip.forwarding value=1 reload=no sysctl_set=yes
+  tags:
+  - sysctl
+
+- name: OpenBSD sysctl net.inet.ip.forwarding = 1 enable ipv4 forwarding (live)
+  shell: /usr/sbin/sysctl net.inet.ip.forwarding=1
+
+- name: copy rc.conf.local to servers
+  copy: src=network/rc.conf.local dest=/etc/rc.conf.local owner=root group=wheel mode=0644
+
+- name: setting default gw
+  template: src=mygate.j2 dest=/etc/mygate owner=root group=wheel mode=0644
+  notify:
+  - reload network
+
+- name: copy unbound.conf
+  copy: src=network/unbound.conf dest=/var/unbound/etc/unbound.conf owner=root group=wheel mode=0644
+  notify:
+  - restart unbound
+
+- name: copy PF pf.conf
+  template: src=pf.conf.j2 dest=/etc/pf.conf owner=root group=wheel mode=0600
+  notify:
+  - reload pf
+  
+# /etc/mygate is not working due to dhcp...
+- name: add default gw to route
+  template: src=hostname.ext_if.j2 dest=/etc/hostname.{{ NAT_out_if }} owner=root group=wheel mode=0600
+  notify:
+  - reload network
+
+- name: dhclient configuration
+  copy: src=network/dhclient.conf dest=/etc/dhclient.conf owner=root group=wheel mode=0644
+  notify:
+  - reload network
+  
+- name: configure dhcpd interfaces
+  template: src=dhcpd.interfaces.j2 dest=/etc/dhcpd.interfaces owner=root group=wheel mode=0644
+  notify:
+  - restart dhcpd
+  
+- debug: var=lan_params
+
+- name: configure dhcpd
+  template: src=dhcpd.conf.j2 dest=/etc/dhcpd.conf owner=root group=wheel mode=0644
+  notify:
+  - restart dhcpd
+  
+  

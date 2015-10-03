@@ -1,0 +1,13 @@
+# dhcpd config file
+# default is to server request on all interfaces inside NAT
+
+{% for int in dhcp_if %}
+
+subnet {{ lan_params[int].subnet }} netmask {{ lan_params[int].netmask }} {
+    option routers {{ lan_params[int].ip4 }};
+    option  domain-name-servers {{ lan_params[int].ip4 }}, 8.8.8.8;
+    range {{ lan_params[int].dhcp_range_low }} {{ lan_params[int].dhcp_range_high }};
+}
+
+
+{% endfor %}
