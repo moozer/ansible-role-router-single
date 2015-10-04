@@ -33,7 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # machine #2 a debian 8 machine
-  config.vm.define "ipsserver" do |serverA|
+  config.vm.define "serverA" do |serverA|
     serverA.vm.box = "deb8-base"
     serverA.vm.synced_folder "shared", "/vagrant", type: "9p"
     serverA.vm.hostname = "serverA"
@@ -71,8 +71,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
              if [ -e $ORIGPATH ] && [ ! -e $DESTPATH ]; then 
                ln -s $ORIGPATH $DESTPATH; 
              else 
-               echo link already in place; 
-               ls -l $ORIGPATH $DESTPATH
+               echo link already in place, or not relevant; 
              fi"
 
 
