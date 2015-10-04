@@ -2,8 +2,8 @@
 
 # -- defining the relevant networks
 LAN_upstream:
-  gateway: "10.100.2.1"
-  subnet: "10.100.2.0"
+  gateway: "10.10.0.1"
+  subnet: "10.10.0.0"
   netmask: "255.255.255.0"
 
 LAN_A:
