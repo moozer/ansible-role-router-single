@@ -22,13 +22,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       :ip => "10.100.10.5",
       :libvirt__forward_mode => "none",
       :libvirt__network_name => "LAN_A",
-      :libvirt__forward_mode => "none"
+      :libvirt__dhcp_enabled => false
 
     router.vm.network :private_network, 
       :ip => "10.10.20.5",
       :libvirt__forward_mode => "none",
       :libvirt__network_name => "LAN_B",
-      :libvirt__forward_mode => "none"
+      :libvirt__dhcp_enabled => false
       
   end
 
@@ -42,8 +42,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # specifying that DHCP trumps mgnt as gateway
     serverA.vm.network :private_network, 
       :libvirt__network_name => "LAN_A",
-      :libvirt__forward_mode => "none",
-      :use_dhcp_assigned_default_route => true
+      :libvirt__forward_mode => "none"
   end
 
   # machine #3 a debian 8 mahcine to hold the ipsec client
