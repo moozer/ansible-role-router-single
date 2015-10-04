@@ -30,8 +30,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       :libvirt__network_name => "LAN_B",
       :libvirt__forward_mode => "none"
       
-    router.vm.provision "shell",
-      inline: "ln -s /usr/local/bin/python /usr/bin"
   end
 
   # machine #2 a debian 8 machine
@@ -65,6 +63,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider :libvirt do |libvirt|
     libvirt.host = ""
   end
+
+  # to handle that openbsd has python located elsewhere
+  # (won't fail on other *nux platforms)
+  config.vm.provision "shell",
+    inline: "ORIGPATH=/usr/local/bin/python; DESTPATH=/usr/bin/python; \
+             if [ -e $ORIGPATH ] && [ ! -e $DESTPATH ]; then 
+               ln -s $ORIGPATH $DESTPATH; 
+             else 
+               echo link already in place; 
+               ls -l $ORIGPATH $DESTPATH
+             fi"
+
 
   # and do provisioning
   config.vm.provision "ansible" do |ansible|
