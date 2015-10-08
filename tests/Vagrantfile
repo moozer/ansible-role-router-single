@@ -21,14 +21,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     router.vm.network :private_network, 
       :ip => "10.100.10.5",
       :libvirt__forward_mode => "none",
-      :libvirt__network_name => "LAN_A",
-      :libvirt__dhcp_enabled => false
+      :libvirt__network_name => "LAN_A"
+#      :libvirt__dhcp_enabled => false
 
     router.vm.network :private_network, 
       :ip => "10.10.20.5",
       :libvirt__forward_mode => "none",
-      :libvirt__network_name => "LAN_B",
-      :libvirt__dhcp_enabled => false
+      :libvirt__network_name => "LAN_B"
+#      :libvirt__dhcp_enabled => false
       
   end
 
