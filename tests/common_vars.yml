@@ -16,7 +16,7 @@ LAN_A:
 
 LAN_B:
   # gateway is not x.x.x.1 due to libvirts handling of networks
-  gateway: 10.10.10.5
+  gateway: 10.10.20.5
   netmask: "255.255.255.0"
   subnet: "10.10.20.0"
   dhcp_range_low: "10.10.20.100"

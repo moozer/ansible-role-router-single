@@ -1,2 +1,39 @@
 ---
 # defaults file for router-single
+
+# -- defining the relevant networks
+#LAN_upstream:
+#  gateway: "10.10.0.1"
+#  subnet: "10.10.0.0"
+#  netmask: "255.255.255.0"
+#
+#LAN_A:
+#  # gateway is not x.x.x.1 due to libvirts handling of networks
+#  gateway: 10.10.10.5 
+#  netmask: "255.255.255.0"
+#  subnet: "10.10.10.0"
+#  dhcp_range_low: "10.10.10.100"
+#  dhcp_range_high: "10.10.10.150" 
+
+# -- combine interfaces with LANs
+#LAN_params:
+#  vio1: "{{ LAN_upstream }}"
+#  vio2: "{{ LAN_A }}"
+
+# -- Interface(s) to NAT from
+#NAT_inside: 
+#- vio2
+
+# -- Interface(s) to NAT to
+#NAT_outside: vio1
+
+# -- enable dhcp for thiese interfaces
+#dhcpd_if:
+#- vio2
+ 
+# -- list of IP adresses for each interface
+#ip_adresses:
+#  vio1: "10.10.0.5"
+#  vio2: "{{ LAN_A.gateway }}"
+ 
+ 

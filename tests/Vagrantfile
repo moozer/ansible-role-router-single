@@ -45,13 +45,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
              fi"
       
     # and do provisioning
-    config.vm.provision "ansible" do |ansible|
+    router.vm.provision "ansible" do |ansible|
       ansible.playbook = "test.yml"
       #ansible.inventory_path = "inventory"
-      #ansible.groups = {
-      #  "routers" => ["router"],
-      #  "servers" => ["serverA", "serverB"]
-      #{
+      ansible.groups = {
+        "routers" => ["router"],
+        "servers" => ["serverA", "serverB"]
+      }
     end
 
   end
@@ -69,7 +69,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       :libvirt__forward_mode => "none",
       :auto_config=> false
 
-    config.vm.provision "shell", 
+    serverA.vm.provision "shell", 
                  inline: "cp /vagrant/interfaces /etc/network/interfaces; \
                          cp /vagrant/default-gw /etc/network/if-up.d/; \
                          service networking restart;"
@@ -90,7 +90,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       :use_dhcp_assigned_default_route => true,
       :auto_config=> false
 
-    config.vm.provision "shell", 
+    serverB.vm.provision "shell", 
                  inline: "cp /vagrant/interfaces /etc/network/interfaces; \
                          cp /vagrant/default-gw /etc/network/if-up.d/; \
                          service networking restart;"
