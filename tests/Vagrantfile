@@ -16,20 +16,44 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     router.vm.network :private_network, 
       :ip => "10.10.0.5",
       :libvirt__forward_mode => "nat",
-      :libvirt__network_name => "LAN_upstream"
+      :libvirt__network_name => "LAN_upstream",
+      :auto_config => false
 
     router.vm.network :private_network, 
       :ip => "10.100.10.5",
       :libvirt__forward_mode => "none",
-      :libvirt__network_name => "LAN_A"
+      :libvirt__network_name => "LAN_A",
+      :auto_config => false
 #      :libvirt__dhcp_enabled => false
 
     router.vm.network :private_network, 
       :ip => "10.10.20.5",
       :libvirt__forward_mode => "none",
-      :libvirt__network_name => "LAN_B"
+      :libvirt__network_name => "LAN_B",
+      :auto_config => false
 #      :libvirt__dhcp_enabled => false
+
+
+    # to handle that openbsd has python located elsewhere
+    # (won't fail on other *nux platforms)
+    router.vm.provision "shell",
+      inline: "ORIGPATH=/usr/local/bin/python; DESTPATH=/usr/bin/python; \
+             if [ -e $ORIGPATH ] && [ ! -e $DESTPATH ]; then 
+               ln -s $ORIGPATH $DESTPATH; 
+             else 
+               echo link already in place, or not relevant; 
+             fi"
       
+    # and do provisioning
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "test.yml"
+      #ansible.inventory_path = "inventory"
+      #ansible.groups = {
+      #  "routers" => ["router"],
+      #  "servers" => ["serverA", "serverB"]
+      #{
+    end
+
   end
 
   # machine #2 a debian 8 machine
@@ -40,13 +64,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # not setting IP address
     # specifying that DHCP trumps mgnt as gateway
-    serverA.vm.network :private_network, 
+   serverA.vm.network :private_network, 
       :libvirt__network_name => "LAN_A",
       :libvirt__forward_mode => "none",
       :auto_config=> false
+
+    config.vm.provision "shell", 
+                 inline: "cp /vagrant/interfaces /etc/network/interfaces; \
+                         cp /vagrant/default-gw /etc/network/if-up.d/; \
+                         service networking restart;"
+    
+
   end
 
-  # machine #3 a debian 8 mahcine to hold the ipsec client
+  # machine #3 a debian 8 machine
   config.vm.define "serverB" do |serverB|
     serverB.vm.box = "deb8-base"
     serverB.vm.synced_folder "shared", "/vagrant", type: "9p"
@@ -56,7 +87,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     serverB.vm.network :private_network, 
       :libvirt__network_name => "LAN_B",
       :libvirt__forward_mode => "none",
-      :use_dhcp_assigned_default_route => true
+      :use_dhcp_assigned_default_route => true,
+      :auto_config=> false
+
+    config.vm.provision "shell", 
+                 inline: "cp /vagrant/interfaces /etc/network/interfaces; \
+                         cp /vagrant/default-gw /etc/network/if-up.d/; \
+                         service networking restart;"
+
   end
 
   # start this on the localhost, not a remote kvm host
@@ -64,25 +102,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     libvirt.host = ""
   end
 
-  # to handle that openbsd has python located elsewhere
-  # (won't fail on other *nux platforms)
-  config.vm.provision "shell",
-    inline: "ORIGPATH=/usr/local/bin/python; DESTPATH=/usr/bin/python; \
-             if [ -e $ORIGPATH ] && [ ! -e $DESTPATH ]; then 
-               ln -s $ORIGPATH $DESTPATH; 
-             else 
-               echo link already in place, or not relevant; 
-             fi"
-
-
-  # and do provisioning
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "test.yml"
-    #ansible.inventory_path = "inventory"
-    ansible.groups = {
-      "routers" => ["router"],
-      "servers" => ["serverA", "serverB"]
-    }
-  end
 
 end
