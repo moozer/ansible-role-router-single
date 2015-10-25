@@ -75,7 +75,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                          cp /vagrant/default-gw /etc/network/if-up.d/; \
                          service networking restart;"
     
-
+    # and do provisioning
+    serverA.vm.provision "ansible" do |ansible|
+      ansible.playbook = "test.yml"
+      #ansible.inventory_path = "inventory"
+      ansible.groups = {
+        "routers" => ["router"],
+        "servers" => ["serverA", "serverB"]
+      }
+    end
   end
 
   # machine #3 a debian 8 machine
@@ -95,7 +103,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                  inline: "cp /vagrant/interfaces /etc/network/interfaces; \
                          cp /vagrant/default-gw /etc/network/if-up.d/; \
                          service networking restart;"
-
+    # and do provisioning
+    serverB.vm.provision "ansible" do |ansible|
+      ansible.playbook = "test.yml"
+      #ansible.inventory_path = "inventory"
+      ansible.groups = {
+        "routers" => ["router"],
+        "servers" => ["serverA", "serverB"]
+      }
+    end
   end
 
   # start this on the localhost, not a remote kvm host
