@@ -1,0 +1,23 @@
+# network tests to be run on the workstations
+# will druing during --check also
+
+- name: ping google (8.8.8.8 - no DNS)
+  shell: /bin/ping -c 1 8.8.8.8
+  always_run: True
+  tags: tests
+
+- name: ping google (google.com - with DNS)
+  shell: /bin/ping -c 1 google.com
+  always_run: True
+  tags: tests
+
+- name: ping router by name
+  shell: "/bin/ping -c 1 {{ router_name }}"
+  always_run: True
+  tags: tests
+
+- name: traceroute check
+  shell: "/bin/traceroute 8.8.8.8 | grep ^' 1' | grep {{ router_name }}"
+  always_run: True
+  tags: tests
+

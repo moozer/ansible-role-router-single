@@ -29,10 +29,17 @@
       vio3: "{{ LAN_B.gateway }}"
 
 # config is handled by vagrant, but I us a common role that supports something like this.
-#- hosts: serverA
-#  # user vagrant and sudo is the vagrant way 
-#  user: vagrant
+- hosts: servers
+  # user vagrant and sudo is the vagrant way 
+  user: vagrant
 #  sudo: yes
+
+  vars:
+  - router_name: router
+
+  tasks:
+  - include: test-network.yml
+
 #
 #  vars:
 #  - lan_params:
