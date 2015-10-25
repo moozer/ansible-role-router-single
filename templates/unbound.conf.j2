@@ -1,0 +1,31 @@
+# $OpenBSD: unbound.conf,v 1.4 2014/04/02 21:43:30 millert Exp $
+
+server:
+        interface: 0.0.0.0
+        #interface: 127.0.0.1@5353      # listen on alternative port
+        interface: ::1
+        #do-ip6: no
+
+        access-control: 10.0.0.0/8 allow
+        access-control: 0.0.0.0/0 refuse
+        access-control: 127.0.0.0/8 allow
+        access-control: ::0/0 refuse
+        access-control: ::1 allow
+
+        hide-identity: yes
+        hide-version: yes
+
+        local-zone: "{{ domain }}." transparent
+{% if resolve_router %}
+        local-data: "{{ ansible_hostname }}.{{ domain }} A {{ ip_addresses[NAT_inside[0]] }}"  
+{% for ip in ansible_all_ipv4_addresses %}
+        local-data-ptr: "{{ ip }} {{ ansible_hostname }}.{{ domain }}"
+{% endfor %}
+{% endif %}
+
+{% if dns_entries is not none %}
+{% for entry in dns_entries %}
+        local-data: "{{ entry.hostname }}.{{ domain }} A {{ entry.hostip }}"   
+        local-data-ptr: "{{ entry.hostip }} {{ entry.hostname }}.{{ domain }}"
+{% endfor %}
+{% endif %}

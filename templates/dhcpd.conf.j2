@@ -1,6 +1,8 @@
 # dhcpd config file
 # default is to server request on all interfaces inside NAT
 
+option  domain-name "{{ domain }}";
+
 {% for int in dhcpd_if %}
 
 subnet {{ LAN_params[int].subnet }} netmask {{ LAN_params[int].netmask }} {

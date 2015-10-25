@@ -36,4 +36,15 @@
 #  vio1: "10.10.0.5"
 #  vio2: "{{ LAN_A.gateway }}"
  
- 
+# -- unbound settings
+# name of localdomain
+domain: local
+# add router to static ip list in unbound?
+resolve_router: True
+
+# extra entries
+#dns_entries:
+#- router: 10.10.10.5
+# default is empty
+dns_entries:
+
