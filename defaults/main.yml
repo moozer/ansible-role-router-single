@@ -33,9 +33,15 @@
  
 # -- list of IP adresses for each interface
 #ip_adresses:
+#  vio0: dhcp
 #  vio1: "10.10.0.5"
 #  vio2: "{{ LAN_A.gateway }}"
- 
+
+# -- firewall settings
+# management interface for ssh access, if empty then nothing
+# mgnt_if: vio0
+
+
 # -- unbound settings
 # name of localdomain
 domain: local
@@ -44,7 +50,7 @@ resolve_router: True
 
 # extra entries
 #dns_entries:
-#- router: 10.10.10.5
+#- { hostip 10.10.10.5, port: 2222 }
 # default is empty
 dns_entries:
 

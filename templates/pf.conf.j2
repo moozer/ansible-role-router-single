@@ -1,16 +1,56 @@
-#       $OpenBSD: pf.conf,v 1.54 2014/08/23 05:49:42 deraadt Exp $
-#
-# See pf.conf(5) and /etc/examples/pf.conf
+{# inspiration from http://www.openbsd.dk/faq/pf/example1.html #}
+# macros
 
+#int_if="{{ NAT_inside | join(' ') }}"
+#int_if="em1"
+
+#tcp_services="{ 22 }"
+icmp_types="echoreq"
+
+# options
+
+set block-policy return
+set loginterface egress
 set skip on lo
 
-block return    # block stateless traffic
-pass            # establish keep-state
+## FTP Proxy rules
+#
+#anchor "ftp-proxy/*"
+#pass in quick on $LAN_A inet proto tcp to any port ftp \
+#    divert-to 127.0.0.1 port 8021
 
-# By default, do not permit remote connections to X11
-block return in on ! lo0 proto tcp to port 6000:6010
+# match rules
 
-# enable NAT
-{% for interface in NAT_inside %}
-pass out on {{ NAT_outside }} inet from {{ interface }}:network to any nat-to ({{ NAT_outside }}) 
+match out on egress inet from !(egress:network) to any nat-to (egress:0)
+
+# filter rules
+
+block in log
+pass out quick
+
+antispoof quick for { lo {{ NAT_inside | join(' ') }} }
+
+# no internet facing services
+#pass in on egress inet proto tcp from any to (egress) \
+#    port $tcp_services
+
+{% if mgnt_if is defined %}
+# always allow ssh on management interface
+pass in on {{ mgnt_if }} inet proto tcp from any to port 22
+{% endif %}
+
+{% if forward_list is defined %}
+{% for rdr in forward_list %}
+pass in on egress inet proto tcp  \
+    to (egress) port {{ rdr.srcport }}  \
+    rdr-to {{ rdr.hostip }} port {{ rdr.dstport }}
+{% endfor %}
+{% else %}
+# no forwarding rules
+{% endif %}
+
+pass in inet proto icmp all icmp-type $icmp_types
+
+{% for iface in NAT_inside %}
+pass in on {{ iface }}
 {% endfor %}
