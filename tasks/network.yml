@@ -17,7 +17,12 @@
     owner=root group=wheel mode=0644
   notify:
   - reload network
-
+  when: LAN_params[NAT_outside].gateway is defined
+  
+- name: remove default gw config
+  file: path=/etc/mygate state=absent
+  when: LAN_params[NAT_outside].gateway is not defined
+  
 - name: copy unbound.conf
   copy: src=network/unbound.conf dest=/var/unbound/etc/unbound.conf owner=root group=wheel mode=0644
   notify:
