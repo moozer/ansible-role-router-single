@@ -50,7 +50,7 @@ resolve_router: True
 
 # extra entries
 #dns_entries:
-#- { hostip 10.10.10.5, port: 2222 }
+#- router: 10.10.10.5
 # default is empty
 dns_entries:
 
