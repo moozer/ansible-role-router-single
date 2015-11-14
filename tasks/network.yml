@@ -3,10 +3,14 @@
 - name: OpenBSD sysctl net.inet.ip.forwarding = 1 enable ipv4 forwarding
   sysctl: name=net.inet.ip.forwarding value=1 reload=no sysctl_set=yes
   tags:
+  - network  
   - sysctl
 
 - name: OpenBSD sysctl net.inet.ip.forwarding = 1 enable ipv4 forwarding (live)
   shell: /usr/sbin/sysctl net.inet.ip.forwarding=1
+  tags:
+  - network  
+  - sysctl
 
 - name: copy rc.conf.local to servers
   copy: src=network/rc.conf.local dest=/etc/rc.conf.local owner=root group=wheel mode=0644
@@ -18,10 +22,14 @@
   notify:
   - reload network
   when: LAN_params[NAT_outside].gateway is defined
+  tags:
+  - network  
   
 - name: remove default gw config
   file: path=/etc/mygate state=absent
   when: LAN_params[NAT_outside].gateway is not defined
+  tags:
+  - network  
   
 - name: create unbound.conf
   template: 
@@ -29,6 +37,9 @@
     owner=root group=wheel mode=0644 
   notify:
   - restart unbound
+  tags:
+  - network  
+  - dns
 
 # /etc/mygate is not working due to dhcp...
 - name: add default gw to route
@@ -36,22 +47,30 @@
   with_items: "{{ ip_addresses | list }}"
   notify:
   - reload network
+  tags:
+  - network  
 
 - name: dhclient configuration
   copy: src=network/dhclient.conf dest=/etc/dhclient.conf owner=root group=wheel mode=0644
   notify:
   - reload network
+  tags:
+  - network  
   
 - name: configure dhcpd interfaces
   template: src=dhcpd.interfaces.j2 dest=/etc/dhcpd.interfaces owner=root group=wheel mode=0644
   notify:
   - restart dhcpd
+  tags:
+  - network  
   
 - name: configure dhcpd
   template: src=dhcpd.conf.j2 dest=/etc/dhcpd.conf owner=root group=wheel mode=0644
   notify:
   - restart dhcpd
-  
+  tags:
+  - network  
+
 # ips must be working before pf is started  
 - name: copy PF pf.conf
   template: 
@@ -59,4 +78,7 @@
     owner=root group=wheel mode=0600
   notify:
   - reload pf
+  tags:
+  - pf
+  - network
   
