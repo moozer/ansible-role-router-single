@@ -17,15 +17,15 @@ server:
 
         local-zone: "{{ domain }}." transparent
 {% if resolve_router %}
-        local-data: "{{ ansible_hostname }}.{{ domain }} A {{ ip_addresses[NAT_inside[0]] }}"  
+        local-data: "{{ ansible_hostname }} A {{ ip_addresses[NAT_inside[0]] }}"  
 {% for ip in ansible_all_ipv4_addresses %}
-        local-data-ptr: "{{ ip }} {{ ansible_hostname }}.{{ domain }}"
+        local-data-ptr: "{{ ip }} {{ ansible_hostname }}"
 {% endfor %}
 {% endif %}
 
 {% if dns_entries is not none %}
 {% for entry in dns_entries %}
-        local-data: "{{ entry.hostname }}.{{ domain }} A {{ entry.hostip }}"   
-        local-data-ptr: "{{ entry.hostip }} {{ entry.hostname }}.{{ domain }}"
+        local-data: "{{ entry.hostname }} A {{ entry.hostip }}"   
+        local-data-ptr: "{{ entry.hostip }} {{ entry.hostname }}"
 {% endfor %}
 {% endif %}
