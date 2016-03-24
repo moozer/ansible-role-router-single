@@ -3,10 +3,10 @@
 - hosts: routers
   # user vagrant and sudo is the vagrant way 
   user: vagrant
-  sudo: yes
+  become: yes
 
   roles:
-  - router-single
+  - router-simple
 
   vars_files:
   - common_vars.yml
