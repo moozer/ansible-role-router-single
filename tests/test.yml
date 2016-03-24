@@ -32,6 +32,9 @@
     
   - forward_list:
     - { hostip: 10.10.20.5, srcport: 80, dstport: 800 }
+    
+#  handlers:
+#  - include: XXXrouter-simple/handlers/restart-OpenBSD.yml
 
 # config is handled by vagrant, but I us a common role that supports something like this.
 - hosts: servers
@@ -41,6 +44,9 @@
 
   vars:
   - router_name: router
+
+  vars_files:
+  - common_vars.yml
 
   tasks:
   - include: test-network.yml
