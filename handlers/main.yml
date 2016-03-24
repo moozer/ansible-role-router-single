@@ -1,6 +1,16 @@
 # includes relevant handlers
 
-- include: restart-OpenBSD.yml
-  when: ansible_os_family == "OpenBSD"
+# TODO: move this to a separate file
 
-- debug: var=ansible_os_family
+- name: restart unbound
+  service: name=unbound state=restarted
+    
+- name: reload network
+  action: shell /bin/sh /etc/netstart
+    
+- name: restart dhcpd
+  service: name=dhcpd state=restarted
+
+- name: reload pf
+  action: shell /sbin/pfctl -f /etc/pf.conf
+    

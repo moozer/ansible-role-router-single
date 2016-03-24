@@ -1,5 +1,9 @@
 # open bsd restart handlers
 
+XXX warning XXX
+This file is currently unused as a result of some 2.0 line bug.
+https://github.com/ansible/ansible/issues/15117
+
 - name: restart unbound
   service: name=unbound state=restarted
     
