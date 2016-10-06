@@ -1,3 +1,4 @@
 # routers are currently only openbsd routers
 
 - include: network.yml
+  become: yes
