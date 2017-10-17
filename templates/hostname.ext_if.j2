@@ -2,5 +2,7 @@
 dhcp
 {% else %}
 inet {{ ip_addresses[item] }} {{ LAN_params[item].netmask }} NONE
+{% if 'gateway' in LAN_params[item] %}
 !route add -net 0.0.0.0/0 {{ LAN_params[item].gateway }}
+{% endif %}
 {% endif %}
